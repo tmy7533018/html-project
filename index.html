@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>給与計算ツール</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-label {
+            font-size: 1rem;
+            color: #555;
+            text-align: left;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-field {
+            width: 48%;
+            padding: 12px 15px;
+            margin: 5px 1%;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #f9f9f9;
+            transition: 0.3s;
+        }
+        .input-field:focus {
+            border-color: #4CAF50;
+            background: #fff;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result, .details {
+            margin-top: 20px;
+            font-size: 1rem;
+            text-align: left;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .error {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .transport-group {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>給与計算ツール</h1>
+        <div class="input-group">
+            <label for="days" class="input-label">出勤日数（日数）:</label>
+            <input type="number" id="days" class="input-field" placeholder="例: 15" min="0">
+        </div>
+        <div class="input-group">
+            <label class="input-label">残業時間:</label>
+            <input type="number" id="overtimeHours" class="input-field" placeholder="時間" min="0">
+            <input type="number" id="overtimeMinutes" class="input-field" placeholder="分" min="0" max="59">
+        </div>
+        <div class="input-group">
+            <label class="input-label">交通費を含めますか？</label>
+            <select id="includeTransport" class="input-field" onchange="toggleTransportInput()">
+                <option value="no">いいえ</option>
+                <option value="yes">はい</option>
+            </select>
+        </div>
+        <div class="input-group transport-group" id="transportGroup">
+            <label for="transportCost" class="input-label">1日の交通費（往復）:</label>
+            <input type="number" id="transportCost" class="input-field" placeholder="例: 420" min="0">
+        </div>
+        <button onclick="calculate()">計算する</button>
+
+        <div class="error" id="error"></div>
+        <div class="result" id="result"></div>
+        <div class="details" id="details"></div>
+    </div>
+
+    <script>
+        function toggleTransportInput() {
+            const includeTransport = document.getElementById('includeTransport').value;
+            const transportGroup = document.getElementById('transportGroup');
+            if (includeTransport === 'yes') {
+                transportGroup.style.display = 'block';
+            } else {
+                transportGroup.style.display = 'none';
+            }
+        }
+
+        function calculate() {
+            const hourlyRate = 1100; // 時給
+            const dailyHours = 7.5; // 実働時間
+            const overtimeRate = hourlyRate * 1.25; // 残業時給
+
+            const daysInput = document.getElementById('days').value;
+            const overtimeHoursInput = document.getElementById('overtimeHours').value;
+            const overtimeMinutesInput = document.getElementById('overtimeMinutes').value;
+            const includeTransport = document.getElementById('includeTransport').value;
+            const transportCostInput = document.getElementById('transportCost').value;
+
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+            const detailsDiv = document.getElementById('details');
+
+            // 入力エラー処理
+            if (!daysInput || daysInput < 0 || !overtimeHoursInput || overtimeHoursInput < 0 || overtimeMinutesInput < 0 || overtimeMinutesInput > 59 || (includeTransport === 'yes' && (!transportCostInput || transportCostInput < 0))) {
+                errorDiv.textContent = "正しい値を入力してください。（分は0〜59の範囲）";
+                resultDiv.innerHTML = "";
+                detailsDiv.innerHTML = "";
+                return;
+            }
+            errorDiv.textContent = "";
+
+            const days = parseFloat(daysInput);
+            const overtimeHours = parseFloat(overtimeHoursInput);
+            const overtimeMinutes = parseFloat(overtimeMinutesInput);
+            const transportCost = includeTransport === 'yes' ? parseFloat(transportCostInput) : 0;
+
+            // 残業時間を小数に変換
+            const overtimeTotal = overtimeHours + (overtimeMinutes / 60);
+
+            // 計算
+            const basicSalary = hourlyRate * dailyHours * days;
+            const overtimePay = overtimeRate * overtimeTotal;
+            const transportAllowance = transportCost * days;
+            const total = basicSalary + overtimePay + transportAllowance;
+
+            // 結果を表示
+            resultDiv.innerHTML = `<p><b>総支給額:</b> ${total.toLocaleString()}円</p>`;
+            detailsDiv.innerHTML = `
+                <p><b>基本給与:</b> ${basicSalary.toLocaleString()}円</p>
+                <p><b>残業代:</b> ${overtimePay.toLocaleString()}円</p>
+                <p><b>交通費:</b> ${transportAllowance.toLocaleString()}円</p>
+                <p><b>計算式:</b> (1,100 × ${dailyHours} × ${days}) + (1,375 × ${overtimeTotal.toFixed(2)}) + (${transportCost} × ${days})</p>
+            `;
+        }
+    </script>
+</body>
+</html>
