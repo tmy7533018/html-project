@@ -85,11 +85,29 @@
         .transport-group {
             display: none;
         }
+        @media screen and (max-width: 480px) {
+            .container {
+                width: 100%;
+                margin: 10px;
+                box-shadow: none;
+            }
+            .input-field {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>給与計算ツール</h1>
+        <p>このツールは、給与の総支給額と社会保険料控除後の金額を計算します。</p>
+        <p><b>社会保険料:</b></p>
+        <ul style="text-align: left;">
+            <li>健康保険料: 8,075円</li>
+            <li>厚生年金料: 15,555円</li>
+            <li>介護保険料（40歳以上の場合）: 1,700円</li>
+        </ul>
         <div class="input-group">
             <label for="days" class="input-label">出勤日数（日数）:</label>
             <input type="number" id="days" class="input-field" placeholder="例: 15" min="0">
@@ -133,6 +151,10 @@
             const dailyHours = 7.5; // 実働時間
             const overtimeRate = hourlyRate * 1.25; // 残業時給
 
+            const healthInsurance = 8075; // 健康保険料
+            const pensionInsurance = 15555; // 厚生年金料
+            const careInsurance = 1700; // 介護保険料（40歳以上の場合）
+
             const daysInput = document.getElementById('days').value;
             const overtimeHoursInput = document.getElementById('overtimeHours').value;
             const overtimeMinutesInput = document.getElementById('overtimeMinutes').value;
@@ -164,14 +186,24 @@
             const basicSalary = hourlyRate * dailyHours * days;
             const overtimePay = overtimeRate * overtimeTotal;
             const transportAllowance = transportCost * days;
-            const total = basicSalary + overtimePay + transportAllowance;
+            const grossSalary = basicSalary + overtimePay + transportAllowance;
+
+            // 社会保険料の計算
+            const totalInsurance = healthInsurance + pensionInsurance;
+            const totalInsuranceWithCare = totalInsurance + careInsurance;
+
+            // 控除後の給与
+            const netSalary = grossSalary - totalInsurance;
+            const netSalaryWithCare = grossSalary - totalInsuranceWithCare;
 
             // 結果を表示
-            resultDiv.innerHTML = `<p><b>総支給額:</b> ${total.toLocaleString()}円</p>`;
+            resultDiv.innerHTML = `<p><b>総支給額:</b> ${grossSalary.toLocaleString()}円</p>`;
             detailsDiv.innerHTML = `
                 <p><b>基本給与:</b> ${basicSalary.toLocaleString()}円</p>
                 <p><b>残業代:</b> ${overtimePay.toLocaleString()}円</p>
                 <p><b>交通費:</b> ${transportAllowance.toLocaleString()}円</p>
+                <p><b>社会保険料控除後（40歳未満）:</b> ${netSalary.toLocaleString()}円</p>
+                <p><b>社会保険料控除後（40歳以上）:</b> ${netSalaryWithCare.toLocaleString()}円</p>
                 <p><b>計算式:</b> (1,100 × ${dailyHours} × ${days}) + (1,375 × ${overtimeTotal.toFixed(2)}) + (${transportCost} × ${days})</p>
             `;
         }
