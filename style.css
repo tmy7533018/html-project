@@ -1,0 +1,165 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e2f;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    animation: fadeIn 1.5s ease-in-out;
+    background: linear-gradient(-45deg, #1e1e2f, #29293d, #383850, #1e1e2f);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+}
+.container {
+    background-color: #29293d;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+    animation: slideUp 1s ease-in-out;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffc107;
+    font-size: 1.5em;
+    animation: fadeIn 2s ease-in-out;
+}
+.form-group {
+    margin-bottom: 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1em;
+}
+.form-group p {
+    font-size: 0.9em;
+    color: #b3b3b3;
+    margin-top: 5px;
+}
+input, select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #383850;
+    color: #ffffff;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 5px #ffc107;
+}
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #383850;
+    border-radius: 5px;
+    font-size: 0.9em;
+    animation: fadeIn 1s ease-in-out;
+}
+.result div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #4a4a63;
+    padding-bottom: 5px;
+}
+.result div:last-child {
+    border-bottom: none;
+}
+.button {
+    display: block;
+    width: calc(100% - 20px);
+    padding: 12px;
+    background-color: #ffc107;
+    border: none;
+    border-radius: 5px;
+    color: #29293d;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.button:active {
+    transform: scale(0.95);
+}
+.error {
+    color: #ff4d4d;
+    font-size: 0.8em;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    animation: shake 0.5s ease-in-out;
+}
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.3em;
+    }
+    .container {
+        padding: 15px;
+    }
+    input, select {
+        font-size: 0.9em;
+    }
+    .button {
+        font-size: 0.9em;
+        padding: 10px;
+    }
+    .result {
+        font-size: 0.85em;
+    }
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+@keyframes growFade {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
