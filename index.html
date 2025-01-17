@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +16,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            animation: fadeIn 1.5s ease-in-out;
         }
         .container {
             background-color: #29293d;
@@ -24,43 +26,53 @@
             max-width: 600px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
             overflow-y: auto;
-            max-height: 90vh;
+            animation: slideUp 1s ease-in-out;
         }
         h1 {
             text-align: center;
             margin-bottom: 20px;
             color: #ffc107;
+            font-size: 1.5em;
+            animation: fadeIn 2s ease-in-out;
         }
         .form-group {
             margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out;
         }
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            font-size: 1em;
         }
         .form-group p {
-            font-size: 12px;
+            font-size: 0.9em;
             color: #b3b3b3;
             margin-top: 5px;
         }
         input, select {
-            width: 100%;
+            width: calc(100% - 20px);
             padding: 10px;
             margin-top: 5px;
             border: none;
             border-radius: 5px;
             background-color: #383850;
             color: #ffffff;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
-        input::placeholder {
-            color: #b3b3b3;
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 5px #ffc107;
         }
         .result {
             margin-top: 20px;
-            padding: 10px;
+            padding: 15px;
             background-color: #383850;
             border-radius: 5px;
+            font-size: 0.9em;
+            animation: fadeIn 1s ease-in-out;
         }
         .result div {
             display: flex;
@@ -74,24 +86,82 @@
         }
         .button {
             display: block;
-            width: 100%;
-            padding: 10px;
+            width: calc(100% - 20px);
+            padding: 12px;
             background-color: #ffc107;
             border: none;
             border-radius: 5px;
             color: #29293d;
             font-weight: bold;
+            font-size: 1em;
             cursor: pointer;
             text-align: center;
+            margin-top: 10px;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-        .button:hover {
-            background-color: #e0a806;
+        .button:active {
+            transform: scale(0.95);
         }
         .error {
             color: #ff4d4d;
-            font-size: 12px;
-            margin-top: -15px;
+            font-size: 0.8em;
+            margin-top: -10px;
             margin-bottom: 10px;
+            animation: shake 0.5s ease-in-out;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.3em;
+            }
+            .container {
+                padding: 15px;
+            }
+            input, select {
+                font-size: 0.9em;
+            }
+            .button {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+            .result {
+                font-size: 0.85em;
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        @keyframes growFade {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -109,11 +179,11 @@
 
             <div class="form-group">
                 <label for="overtimeOption">残業時間を入力しますか？</label>
-                <select id="overtimeOption" onchange="toggleOvertimeInputs()">
+                <select id="overtimeOption" onchange="toggleOvertimeInputsWithAnimation()">
                     <option value="no" selected>いいえ</option>
                     <option value="yes">はい</option>
                 </select>
-                <div id="overtimeInputs" style="display: none;">
+                <div id="overtimeInputs" style="display: none; animation: growFade 0.5s ease-in-out;">
                     <label for="regularOvertime">法内残業時間</label>
                     <input type="number" id="regularOvertime" placeholder="例: 10">
                     <p>法定労働時間内での残業時間を入力してください。</p>
@@ -127,11 +197,11 @@
 
             <div class="form-group">
                 <label for="transportationOption">1日の交通費を入力しますか？</label>
-                <select id="transportationOption" onchange="toggleInput('transportationOption', 'transportation')">
+                <select id="transportationOption" onchange="toggleInputWithAnimation('transportationOption', 'transportation')">
                     <option value="no" selected>いいえ</option>
                     <option value="yes">はい</option>
                 </select>
-                <input type="number" id="transportation" placeholder="例: 500" style="display: none;">
+                <input type="number" id="transportation" placeholder="例: 500" style="display: none; animation: growFade 0.5s ease-in-out;">
                 <p>1日あたりの交通費を入力してください。</p>
                 <div class="error" id="error-transportation"></div>
             </div>
@@ -143,7 +213,7 @@
     </div>
 
     <script>
-        function toggleInput(optionId, inputId) {
+        function toggleInputWithAnimation(optionId, inputId) {
             const optionValue = document.getElementById(optionId).value;
             const inputField = document.getElementById(inputId);
             inputField.style.display = optionValue === 'yes' ? 'block' : 'none';
@@ -152,7 +222,7 @@
             }
         }
 
-        function toggleOvertimeInputs() {
+        function toggleOvertimeInputsWithAnimation() {
             const optionValue = document.getElementById('overtimeOption').value;
             const overtimeInputs = document.getElementById('overtimeInputs');
             overtimeInputs.style.display = optionValue === 'yes' ? 'block' : 'none';
@@ -231,6 +301,7 @@
             const netPay = grossPay - totalDeductions;
 
             const resultDiv = document.getElementById('result');
+            resultDiv.style.animation = "growFade 0.5s ease-in-out";
             resultDiv.innerHTML = `
                 <div><span>所定内給与:</span><span>¥${baseSalary.toFixed(2)}</span></div>
                 <div><span>残業代（法内残業）:</span><span>¥${regularOvertimePay.toFixed(2)}</span></div>
